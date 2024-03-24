@@ -55,14 +55,13 @@
             };
 
             recognition.onresult = (event) => {
-
                 const transcript = event.results[0][0].transcript;
 
-  // Append the transcript to the existing content in the textarea
+                // Append the transcript to the existing content in the textarea
                 speechTextArea.value += transcript + " ";
-};
 
-
+                // Store the transcribed text
+                transcribedText += transcript + " ";
             };
 
             recognition.onend = () => {
@@ -93,6 +92,7 @@
                 recognition.stop();
             }
         }
+
         window.addEventListener("DOMContentLoaded", () => {
             // Fetch the summarized text file
             fetch("summarized_notes.txt")
