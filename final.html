@@ -33,6 +33,7 @@
 
     <script>
         let recognition;
+        let transcribedText = ''; // Variable to store transcribed text
 
         function startRecording() {
             const outputDiv = document.getElementById("output"); // Element to display transcription
@@ -55,9 +56,10 @@
 
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
+                transcribedText += transcript + ' '; // Append transcript to stored text
 
                 // Set the value of the first text box to the transcript
-                speechTextArea.value = transcript;
+                speechTextArea.value = transcribedText;
             };
 
             recognition.onend = () => {
@@ -70,7 +72,7 @@
                     type: "audio/wav",
                 });
                 const formData = new FormData();
-                formData.append("text", speechTextArea.value);
+                formData.append("text", transcribedText); // Use stored text for summarization
 
                 fetch("http://127.0.0.1:5000/summarize", {
                     method: "POST",
