@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audio Recorder</title>
+<style>
+  button {
+    padding: 10px 20px;
+    margin: 10px;
+  }
+</style>
+</head>
+<body>
+<button id="startRecording">Start Recording</button>
+<button id="stopRecording" disabled>Stop Recording</button>
+<button id="saveRecording">Save Recording</button> <!-- New button for saving the recording -->
+<script>
+  let mediaRecorder;
+  let chunks = [];
+  let recordedAudioBlob; // Variable to store recorded audio Blob data
+
+  // Get access to the microphone
+  navigator.mediaDevices.getUserMedia({ audio: true })
+  .then(function(stream) {
+    // Create a MediaRecorder instance
+    mediaRecorder = new MediaRecorder(stream);
+
+    // When data is available, push it to the chunks array
+    mediaRecorder.ondataavailable = function(e) {
+      chunks.push(e.data);
+    };
+
+    // When recording stops, create a Blob from the recorded data
+    mediaRecorder.onstop = function() {
+      recordedAudioBlob = new Blob(chunks, { type: 'audio/webm' }); // Store recorded audio Blob data
+
+      // Enable the saveRecording button
+      document.getElementById('saveRecording').disabled = false;
+    };
+  })
+  .catch(function(err) {
+    console.error('The following getUserMedia error occurred: ' + err);
+  });
+
+  // Start recording when the start button is clicked
+  document.getElementById('startRecording').addEventListener('click', function() {
+    chunks = [];
+    mediaRecorder.start();
+    document.getElementById('startRecording').disabled = true;
+    document.getElementById('stopRecording').disabled = false;
+    document.getElementById('saveRecording').disabled = true; // Disable saveRecording button
+  });
+
+  // Stop recording when the stop button is clicked
+  document.getElementById('stopRecording').addEventListener('click', function() {
+    mediaRecorder.stop();
+    document.getElementById('startRecording').disabled = false;
+    document.getElementById('stopRecording').disabled = true;
+  });
+
+  // Save recording when the saveRecording button is clicked
+  document.getElementById('saveRecording').addEventListener('click', function() {
+    saveRecording(recordedAudioBlob);
+  });
+
+  // Function to save the recorded audio to the user's local machine
+  function saveRecording(blob) {
+    // Create a temporary download link to download the Blob data
+    const downloadLink = document.createElement('a');
+    downloadLink.href = URL.createObjectURL(blob);
+    downloadLink.download = 'recorded_audio.webm'; // Specify the filename for download
+    downloadLink.click();
+  }
+</script>
+</body>
+</html>
