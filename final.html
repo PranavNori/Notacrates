@@ -7,104 +7,104 @@
     <link rel="stylesheet" type="text/css" href="mytest.css">
 </head>
 <body>
-
-<div class="container">
-    <div class="title">
-        <h1>NOTACRATES</h1>
+    <div class="container">
+        <div class="title">
+            <h1>NOTACRATES</h1>
+        </div>
+        <button id="startRecording" onclick="startRecording()">
+            Start Recording
+        </button>
+        <button id="stopRecording" onclick="stopRecording()" style="display: none">
+            Stop Recording
+        </button>
+        <div class="textbox1-title">
+            <h1>Speech To Text</h1>
+        </div>
+        <textarea class="text-box" id="speechTextArea"></textarea>
+        <div class="textbox2-title">
+            <h1>Summarized</h1>
+        </div>
+        <textarea class="text-box" id="summarizedTextArea"></textarea>
     </div>
-    <button id="startRecording" onclick="startRecording()">
-        Start Recording
-    </button>
-    <button id="stopRecording" onclick="stopRecording()" style="display: none">
-        Stop Recording
-    </button>
-    <div class="textbox1-title">
-        <h1>Speech To Text</h1>
-    </div>
-    <textarea class="text-box" id="speechTextArea"></textarea>
-    <div class="textbox2-title">
-        <h1>Summarized</h1>
-    </div>
-    <textarea class="text-box" id="summarizedTextArea"></textarea>
-</div>
+    
+    <div id="output"></div>
+    <div id="status"></div>
+    <!-- Add a status message container -->
 
-<div id="output"></div>
-<div id="status"></div>
-<!-- Add a status message container -->
+    <script>
+        let recognition;
 
-<script>
-    let recognition;
+        function startRecording() {
+            const outputDiv = document.getElementById("output"); // Element to display transcription
+            const statusDiv = document.getElementById("status"); // Status message container
+            const speechTextArea = document.getElementById("speechTextArea");
 
-    function startRecording() {
-        const speechTextArea = document.getElementById("speechTextArea"); // Text area to display speech-to-text transcription
-        const statusDiv = document.getElementById("status"); // Status message container
+            recognition = new (
+                window.SpeechRecognition ||
+                window.webkitSpeechRecognition ||
+                window.mozSpeechRecognition ||
+                window.msSpeechRecognition
+            )();
+            recognition.lang = "en-US";
 
-        recognition = new (
-            window.SpeechRecognition ||
-            window.webkitSpeechRecognition ||
-            window.mozSpeechRecognition ||
-            window.msSpeechRecognition
-        )();
-        recognition.lang = "en-US";
+            recognition.onstart = () => {
+                statusDiv.textContent = "Recording started..."; // Update status message
+                document.getElementById("startRecording").style.display = "none";
+                document.getElementById("stopRecording").style.display = "inline";
+            };
 
-        recognition.onstart = () => {
-            statusDiv.textContent = "Recording started..."; // Update status message
-            document.getElementById("startRecording").style.display = "none";
-            document.getElementById("stopRecording").style.display = "inline";
-        };
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
 
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
+                // Set the value of the first text box to the transcript
+                speechTextArea.value = transcript;
+            };
 
-            // Set the value of the first text box to the transcript
-            speechTextArea.value = transcript;
-        };
+            recognition.onend = () => {
+                statusDiv.textContent = "Recording stopped"; // Update status message
+                document.getElementById("startRecording").style.display = "inline";
+                document.getElementById("stopRecording").style.display = "none";
 
-        recognition.onend = () => {
-            statusDiv.textContent = "Recording stopped"; // Update status message
-            document.getElementById("startRecording").style.display = "inline";
-            document.getElementById("stopRecording").style.display = "none";
+                // Get the recorded audio and send it to the Flask endpoint
+                const audioBlob = new Blob(recognition.audioData, {
+                    type: "audio/wav",
+                });
+                const formData = new FormData();
+                formData.append("text", speechTextArea.value);
 
-            // Get the recorded audio and send it to the Flask endpoint
-            const audioBlob = new Blob(recognition.audioData, {
-                type: "audio/wav",
-            });
-            const formData = new FormData();
-            formData.append("text", speechTextArea.value);
+                fetch("http://127.0.0.1:5000/summarize", {
+                    method: "POST",
+                    body: formData,
+                })
+                    .then((response) => (outputDiv.textContent = response)) // Do something with the transcription response
+                    .catch((error) => console.error("Error:", error));
+            };
 
-            fetch("http://127.0.0.1:5000/summarize", {
-                method: "POST",
-                body: formData,
-            })
-                .then((response) => (outputDiv.textContent = response)) // Do something with the transcription response
-                .catch((error) => console.error("Error:", error));
-        };
-
-        recognition.start(); // Start speech recognition
-    }
-
-    function stopRecording() {
-        if (recognition) {
-            recognition.stop();
+            recognition.start(); // Start speech recognition
         }
-    }
-    window.addEventListener("DOMContentLoaded", () => {
-        // Fetch the summarized text file
-        fetch("summarized_notes.txt")
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch summarized text");
-                }
-                return response.text();
-            })
-            .then((text) => {
-                // Populate the summarized textarea with the fetched text
-                document.getElementById("summarizedTextArea").value = text;
-            })
-            .catch((error) => {
-                console.error("Error fetching summarized text:", error);
-            });
-    });
-</script>
+
+        function stopRecording() {
+            if (recognition) {
+                recognition.stop();
+            }
+        }
+        window.addEventListener("DOMContentLoaded", () => {
+            // Fetch the summarized text file
+            fetch("summarized_notes.txt")
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch summarized text");
+                    }
+                    return response.text();
+                })
+                .then((text) => {
+                    // Populate the summarized textarea with the fetched text
+                    document.getElementById("summarizedTextArea").value = text;
+                })
+                .catch((error) => {
+                    console.error("Error fetching summarized text:", error);
+                });
+        });
+    </script>
 </body>
 </html>
