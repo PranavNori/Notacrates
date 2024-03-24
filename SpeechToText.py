@@ -26,36 +26,44 @@ if len(chunks[-1]) <= 100:
     chunks.pop(-1)
 transcriptions = []
 
+# for i, chunk in enumerate(chunks):
+#     chunk.export(f"temp_chunk_{i}.wav", format="wav")
+#     transcription = client.audio.transcriptions.create(
+#         file=open(f"temp_chunk_{i}.wav", "rb"),
+#         model="whisper-1", 
+#         response_format="text"
+#     )
+
+#     transcriptions.append(transcription)
+
+# final_transcription = "".join(transcriptions)
+
 for i, chunk in enumerate(chunks):
-    chunk.export(f"temp_chunk_{i}.wav", format="wav")
-    transcription = client.audio.transcriptions.create(
-        file=open(f"temp_chunk_{i}.wav", "rb"),
-        model="whisper-1", 
-        response_format="text"
-    )
+    filename = f"temp_chunk_{i}.wav"
+    chunk.export(filename, format="wav")
+    with open(filename, "rb") as file:
+        transcription = client.audio.transcriptions.create(
+            file=file,
+            model="whisper-1", 
+            response_format="text"
+        )
     transcriptions.append(transcription)
+    os.remove(filename)  # Make sure this is outside the 'with' block
 
 final_transcription = "".join(transcriptions)
 
 with open("transcription.txt", "w") as f:
     f.write(final_transcription)
 
-# try this after dinner all of this below is stuff to fix the question mark thing
-# with open("transcription.txt", "r") as f:
-#     for line in f:
-#         line = line.strip()
-#         line = bytes(line, 'utf-8').decode('utf-8', 'ignore')
+with open("transcription.txt", "rb") as f:  # Read as binary
+    content_bytes = f.read()
 
-
-with open("transcription.txt", "r", encoding="utf-8") as f:
-    content = f.read()
-
-# Convert to bytes, then decode back to string, ignoring errors
-cleaned_content = bytes(content, 'utf-8').decode('utf-8', 'ignore')
+# Decode with 'ignore' to skip invalid UTF-8 byte sequences
+cleaned_content = content_bytes.decode('utf-8', 'ignore')
 
 with open("transcription.txt", "w", encoding="utf-8") as f:
     f.write(cleaned_content)
 
-
-
+# for i, chunk in enumerate(chunks):
+#     os.remove(f"temp_chunk_{i}.wav")
 
