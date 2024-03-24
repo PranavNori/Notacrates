@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech to Text App</title>
+    <link rel="stylesheet" type="text/css" href="mytest.css">
+</head>
+<body>
+    <div class="container">
+        <div class="title">
+            <h1>NOTACRATES</h1>
+        </div>
+        <button id="startRecording" onclick="startRecording()" class="buttons">
+            Start Recording
+        </button>
+        <button id="stopRecording" onclick="stopRecording()" style="display: none" class="buttons">
+            Stop Recording
+        </button>
+        <div class="textbox1-title">
+            <h1>Speech To Text</h1>
+        </div>
+        <textarea class="text-box" id="speechTextArea"></textarea>
+        <div class="textbox2-title">
+            <h1>Summarized</h1>
+        </div>
+        <textarea class="text-box" id="summarizedTextArea"></textarea>
+    </div>
+    <div id="output"></div>
+    <div id="status"></div>
+    <!-- Add a status message container -->
+
+    <script>
+        let recognition;
+      
+        function startRecording() {
+         
