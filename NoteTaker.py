@@ -4,7 +4,11 @@ from dotenv import load_dotenv
 load_dotenv()
 client = OpenAI()
 
-def summarize_transcript(file_path):
+def summarize_transcript(file_path, course = "", topic = ""):
+    if course != "":
+        course = "This lecture is for a course on "+course+"."
+    if topic != "":
+        topic = "This lecture is focused on "+topic+"."
     try:
         # Read the transcript from a text file
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -15,7 +19,7 @@ def summarize_transcript(file_path):
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",  # Specify the engine/model directly here
             messages=[
-                {"role": "system", "content": "Please summarize the following lecture into key points and important concepts. Do not alter any of the information in the input file when creatng the key points and important concepts. "},
+                {"role": "system", "content": "Please summarize the following lecture into key points and important concepts. Do not alter any of the information in the input file when creatng the key points and important concepts. {course} {topic}"},
                 {"role": "user", "content": transcript}
             ]
         )
@@ -38,5 +42,8 @@ def summarize_transcript(file_path):
         print(f"An unexpected error occurred: {e}")
 
 # Example usage
-file_path = "lecture_transcript.txt"  
-summarize_transcript(file_path)
+#file_path = "lecture_transcript.txt"  
+#file_path = "compellingCharacters.txt"
+file_path = "reef.txt"
+
+summarize_transcript(file_path, "Marine Biology and Ecology", "Ecotourism, Recreation, and Reefs")
