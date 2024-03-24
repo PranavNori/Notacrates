@@ -1,11 +1,8 @@
-Key points:
-- Josh is a computer science student.
-- He has an interest in marine biology.
-- He is currently pursuing data science.
-- He believes he has to do data science.
-- He is knowledgeable about computer science but can act foolish at times.
+Key Points:
+- Kitty is a computer science student.
+- She is younger than everyone else in the class because she skipped a grade.
 
-Important concepts:
-- Josh's academic pursuits and interests may not always align.
-- There is a pressure or expectation influencing his choice of data science over marine biology.
-- Despite his expertise in computer science, his behavior can contrast with his knowledge.
+Important Concepts:
+- Academic advancement and skipping grades can lead to students being younger than their peers.
+- Age does not necessarily correlate with academic level or ability.
+- It is important to support and provide resources for students who may be younger than their classmates but are still able to excel academically.
