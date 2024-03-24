@@ -55,11 +55,15 @@
             };
 
             recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                transcribedText += transcript + ' '; // Append transcript to stored text
 
-                // Set the value of the first text box to the transcript
-                speechTextArea.value = transcribedText;
+                recognition.onresult = (event) => {
+  const transcript = event.results[0][0].transcript;
+
+  // Append the transcript to the existing content in the textarea
+  speechTextArea.value += transcript + " ";
+};
+
+
             };
 
             recognition.onend = () => {
