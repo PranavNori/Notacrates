@@ -68,6 +68,23 @@
           recognition.stop();
         }
       }
+      window.addEventListener("DOMContentLoaded", () => {
+        // Fetch the summarized text file
+        fetch("summarized_notes.txt")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Failed to fetch summarized text");
+            }
+            return response.text();
+          })
+          .then((text) => {
+            // Populate the summarized textarea with the fetched text
+            document.getElementById("summarizedTextArea").value = text;
+          })
+          .catch((error) => {
+            console.error("Error fetching summarized text:", error);
+          });
+      });
     </script>
   </body>
 </html>
