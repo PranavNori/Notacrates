@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 load_dotenv()
 client = OpenAI()
 
+
+
 def summarize_transcript(file_path, course = "", topic = ""):
     if course != "":
         course = "This lecture is for a course on "+course+"."
