@@ -1,35 +1,49 @@
-<html lang = "en">
-    <head>
-        <meta charset = "UTF-8">
-        <meta name = "viewport" content = "width=device-width, initial-scale = 1.0">
-        <link rel = "stylesheet" type = "text/css" href = "webPage.css">
-        <title> Speech to Text App </title>
-        <body>
-            <div class = container>
-                <div class = "title">
-                    <h1> NOTACRATES </h1>
-                </div>
-                    <div class = "buttons">
-                        <button id = "startButton"> START</button>
-                        <br>
-                        <button id = "stopButton"> STOP </button>
-                    </div>
-    
-                    <div class = "textbox1-title">
-                        <h1> Speech To Text </h1>
-                    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech to Text App</title>
+    <link rel="stylesheet" type="text/css" href="webPage.css">
+</head>
+<body>
+    <div class="container">
+        <div class="title">
+            <h1>NOTACRATES</h1>
+        </div>
+        <div class="buttons">
+            <button id="startButton">START</button>
+            <br>
+            <button id="stopButton">STOP</button>
+        </div>
+        <div class="textbox1-title">
+            <h1>Speech To Text</h1>
+        </div>
+        <textarea class="text-box" id="speechTextArea"></textarea>
+        <div class="textbox2-title">
+            <h1>Summarized</h1>
+        </div>
+        <textarea class="text-box" id="summarizedTextArea"></textarea>
+    </div>
 
-                    <textarea class = "text-box"> </textarea>
-
-                    <div class = "textbox2-title">
-                        <h1> Summarized Notes </h1>
-                    </div>
-
-                    <textarea class = "text-box"> </textarea>
-
-                    
-
-            </div>
-        </body>
-    </head>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            // Fetch the summarized text file
+            fetch('summarized_notes.txt')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch summarized text');
+                    }
+                    return response.text();
+                })
+                .then(text => {
+                    // Populate the summarized textarea with the fetched text
+                    document.getElementById('summarizedTextArea').value = text;
+                })
+                .catch(error => {
+                    console.error('Error fetching summarized text:', error);
+                });
+        });
+    </script>
+</body>
 </html>
