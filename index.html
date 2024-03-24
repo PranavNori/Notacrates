@@ -4,44 +4,69 @@
     <title>Speech to Text</title>
   </head>
   <body>
-    <button id="startRecording">Start Recording</button>
+    <button id="startRecording" onclick="startRecording()">
+      Start Recording
+    </button>
+    <button id="stopRecording" onclick="stopRecording()" style="display: none">
+      Stop Recording
+    </button>
     <div id="output"></div>
+    <div id="status"></div>
+    <!-- Add a status message container -->
 
     <script>
-      const startButton = document.getElementById("startRecording");
-      const outputDiv = document.getElementById("output");
+      let recognition;
 
-      if (
-        "SpeechRecognition" in window ||
-        "webkitSpeechRecognition" in window ||
-        "mozSpeechRecognition" in window ||
-        "msSpeechRecognition" in window
-      ) {
-        const recognition = new (window.SpeechRecognition ||
+      function startRecording() {
+        const outputDiv = document.getElementById("output"); // Element to display transcription
+        const statusDiv = document.getElementById("status"); // Status message container
+
+        recognition = new (window.SpeechRecognition ||
           window.webkitSpeechRecognition ||
           window.mozSpeechRecognition ||
           window.msSpeechRecognition)();
         recognition.lang = "en-US";
 
         recognition.onstart = () => {
-          startButton.textContent = "Listening...";
+          statusDiv.textContent = "Recording started..."; // Update status message
+          document.getElementById("startRecording").style.display = "none";
+          document.getElementById("stopRecording").style.display = "inline";
         };
 
         recognition.onresult = (event) => {
           const transcript = event.results[0][0].transcript;
-          outputDiv.textContent = transcript;
+
+          // Append transcript to output div
+          outputDiv.textContent += transcript + " ";
         };
 
         recognition.onend = () => {
-          startButton.textContent = "Start Voice Input";
+          statusDiv.textContent = "Recording stopped"; // Update status message
+          document.getElementById("startRecording").style.display = "inline";
+          document.getElementById("stopRecording").style.display = "none";
+
+          // Get the recorded audio and send it to the Flask endpoint
+          const audioBlob = new Blob(recognition.audioData, {
+            type: "audio/wav",
+          });
+          const formData = new FormData();
+          formData.append("text", outputDiv.textContent);
+
+          fetch("http://127.0.0.1:5000/summarize", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => (outputDiv.textContent = response)) // Do something with the transcription response
+            .catch((error) => console.error("Error:", error));
         };
 
-        startButton.addEventListener("click", () => {
-          recognition.start();
-        });
-      } else {
-        outputDiv.textContent =
-          "Speech Recognition API not supported in this browser.";
+        recognition.start(); // Start speech recognition
+      }
+
+      function stopRecording() {
+        if (recognition) {
+          recognition.stop();
+        }
       }
     </script>
   </body>

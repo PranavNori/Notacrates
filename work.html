@@ -1,69 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Audio Recorder</title>
-<style>
-  button {
-    padding: 10px 20px;
-    margin: 10px;
-  }
-</style>
-</head>
-<body>
-<button id="recordButton">Record</button>
-<button id="stopButton" disabled>Stop</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audio Recorder</title>
+    <style>
+      button {
+        padding: 10px 20px;
+        margin: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="recordButton">Record</button>
+    <button id="stopButton" disabled>Stop</button>
 
-<script>
-  let mediaRecorder;
-  let chunks = [];
+    <script>
+      let mediaRecorder;
+      let chunks = [];
 
-  const recordButton = document.getElementById('recordButton');
-  const stopButton = document.getElementById('stopButton');
+      const recordButton = document.getElementById("recordButton");
+      const stopButton = document.getElementById("stopButton");
 
-  recordButton.addEventListener('click', startRecording);
-  stopButton.addEventListener('click', stopRecording);
+      recordButton.addEventListener("click", startRecording);
+      stopButton.addEventListener("click", stopRecording);
 
-  async function startRecording() {
-      try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      async function startRecording() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
           mediaRecorder = new MediaRecorder(stream);
           mediaRecorder.ondataavailable = (e) => {
-              chunks.push(e.data);
+            chunks.push(e.data);
           };
+          console.log("feeling okay");
           mediaRecorder.onstop = async () => {
-              const blob = new Blob(chunks, { 'type': 'audio/wav' });
-              const formData = new FormData();
-              formData.append('audio', blob, 'recording.wav');
-
-              try {
-                  const response = await fetch('/save-audio', {
-                      method: 'POST',
-                      body: formData
-                  });
-                  if (response.ok) {
-                      console.log('Audio saved successfully.');
-                  } else {
-                      console.error('Failed to save audio.');
-                  }
-              } catch (error) {
-                  console.error('Error saving audio:', error);
+            const blob = new Blob(chunks, { type: "audio/wav" });
+            const formData = new FormData();
+            formData.append("audio", blob, "recording.wav");
+            stream.getTracks().forEach((track) => track.stop());
+            try {
+              const response = await fetch("/save-audio", {
+                method: "POST",
+                body: formData,
+              });
+              if (response.ok) {
+                console.log("Audio saved successfully.");
+              } else {
+                console.error("Failed to save audio.");
               }
+            } catch (error) {
+              console.error("Error saving audio:", error);
+            }
           };
           mediaRecorder.start();
           recordButton.disabled = true;
           stopButton.disabled = false;
-      } catch (err) {
-          console.error('Error accessing microphone:', err);
+        } catch (err) {
+          console.error("Error accessing microphone:", err);
+        }
       }
-  }
 
-  function stopRecording() {
-      mediaRecorder.stop();
-      recordButton.disabled = false;
-      stopButton.disabled = true;
-  }
-</script>
-</body>
+      function stopRecording() {
+        mediaRecorder.stop();
+        recordButton.disabled = false;
+        stopButton.disabled = true;
+      }
+    </script>
+  </body>
 </html>

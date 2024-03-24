@@ -5,17 +5,17 @@ load_dotenv()
 client = OpenAI()
 
 
-
-def summarize_transcript(file_path, course = "", topic = ""):
+#changing parameter to text instead of filepath
+def summarize_transcript(fileText, course = "", topic = ""):
     if course != "":
         course = "This lecture is for a course on "+course+"."
     if topic != "":
         topic = "This lecture is focused on "+topic+"."
     try:
         # Read the transcript from a text file
-        with open(file_path, 'r', encoding='utf-8') as file:
-            transcript = file.read()
-        
+        # with open(file_path, 'r', encoding='utf-8') as file:
+        #     transcript = file.read()
+        transcript = fileText
         print("Processing the transcript...")
         # Process the transcript with the OpenAI API
         response = client.chat.completions.create(
@@ -29,11 +29,12 @@ def summarize_transcript(file_path, course = "", topic = ""):
         # Extract the summary from the API response
         #summary = response['choices'][0]['text'].strip()
         
-        # Write the summary to a text document
+        #Write the summary to a text document
         with open('summarized_notes.txt', 'w', encoding='utf-8') as summary_file:
             summary_file.write(summary)
         
-        print("Summarized Notes have been saved to 'summarized_notes.txt'.")
+        print("Summarized Notes have been made and are being sent back")
+        return summary
     
     except client.APIError as e:  # Updated exception handling
         print(f"An error occurred with the OpenAI API: {str(e)}")
@@ -48,4 +49,4 @@ def summarize_transcript(file_path, course = "", topic = ""):
 #file_path = "compellingCharacters.txt"
 file_path = "reef.txt"
 
-summarize_transcript(file_path, "Marine Biology and Ecology", "Ecotourism, Recreation, and Reefs")
+#summarize_transcript(file_path, "Marine Biology and Ecology", "Ecotourism, Recreation, and Reefs")
