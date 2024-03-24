@@ -1,12 +1,11 @@
 Key points:
-- Former top-ranked OverWatch player in the world.
-- Retired from professional gaming.
-- Now a student at Rutgers University.
-- Majoring in computer science.
-- Had significant success and earned money as a professional gamer.
+- Josh is a computer science student.
+- He has an interest in marine biology.
+- He is currently pursuing data science.
+- He believes he has to do data science.
+- He is knowledgeable about computer science but can act foolish at times.
 
 Important concepts:
-- Transition from professional gaming to pursuing higher education.
-- Balancing passion for gaming and academic pursuits.
-- Leveraging skills from gaming (e.g., strategic thinking, problem-solving) in computer science studies.
-- Impact of gaming experience on personal and professional development.
+- Josh's academic pursuits and interests may not always align.
+- There is a pressure or expectation influencing his choice of data science over marine biology.
+- Despite his expertise in computer science, his behavior can contrast with his knowledge.
